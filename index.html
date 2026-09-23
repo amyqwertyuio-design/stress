@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마음 응급상자</title>
+    <title>마음 응급상자 & 스트레스 다이어리</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Apple SD Gothic Neo', sans-serif;
             background-color: #f4f7f6;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px;
+            padding: 20px;
+            margin: 0;
         }
         .card {
             background: white;
@@ -19,19 +21,55 @@
             padding: 24px;
             margin-bottom: 20px;
             width: 100%;
-            max-width: 350px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
+        h2 { margin-top: 0; color: #4a7c59; font-size: 1.3rem; text-align: center; }
+        h3 { color: #2e5235; font-size: 1.1rem; margin-top: 20px; }
+        
+        /* 버튼 및 입력 스타일 */
         button {
             background-color: #4a7c59;
             color: white;
             border: none;
             padding: 12px 20px;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #3b6346; }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        /* 도움말 접기/펴기 스타일 */
+        details {
+            background-color: #f0f7f4;
+            border-left: 4px solid #4a7c59;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        summary {
+            font-weight: bold;
+            color: #2e5235;
             cursor: pointer;
         }
+
+        /* 호흡 애니메이션 */
         .breath-circle {
             width: 100px;
             height: 100px;
@@ -43,25 +81,142 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            transition: transform 4s;
+            transition: transform 4s ease-in-out;
         }
-        .breath-circle.expand { transform: scale(1.5); }
+        .breath-circle.expand { transform: scale(1.4); background-color: #70b0c0; }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .checkbox-group input { width: auto; margin: 0; }
+        
+        .diary-entry {
+            background: #fafafa;
+            border: 1px solid #eee;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 1. 호흡 가이드 -->
     <div class="card">
         <h2>🫁 4초 마음 안정 호흡</h2>
         <div class="breath-circle" id="circle">숨 쉬기</div>
-        <button onclick="startBreathing()">호흡 시작</button>
+        <button onclick="startBreathing()">호흡 시작하기</button>
     </div>
 
+    <!-- 2. 오늘의 처방전 -->
     <div class="card">
         <h2>📖 오늘의 마음 처방전</h2>
-        <p id="quote">버튼을 누르면 글귀가 나옵니다.</p>
+        <p id="quote" style="text-align:center; font-style:italic;">버튼을 누르면 마음을 달래주는 문장이 나옵니다.</p>
         <button onclick="getQuote()">문장 가져오기</button>
     </div>
 
+    <!-- 3. 스트레스 다이어리 -->
+    <div class="card">
+        <h2>📝 스트레스 다이어리</h2>
+
+        <!-- STEP 1 -->
+        <h3>1단계: 경고 신호 및 사건 기록</h3>
+        <details>
+            <summary>💡 경고 신호란 무엇인가요? (도움말 보기)</summary>
+            <p>스트레스가 쌓이면 몸과 마음이 신호를 보냅니다. 내가 어떤 반응을 보이고 있는지 체크해 보세요.</p>
+            <ul>
+                <li><b>신체:</b> 두통, 어깨/목 경직, 소화불량, 피로 등</li>
+                <li><b>감정:</b> 우울, 불안, 분노, 슬픔, 조바심 등</li>
+                <li><b>생각:</b> 집중력 상실, 건망증, 부정적 사고 반복 등</li>
+                <li><b>행위:</b> 폭식, 음주, 과도한 쇼핑/게임, 운동 감소 등</li>
+                <li><b>관계:</b> 사람 기피, 타인 비판, 사교 감소 등</li>
+                <li><b>내적가치:</b> 무기력감, 인생의 가치 상실감 등</li>
+            </ul>
+        </details>
+
+        <label><b>느껴진 경고 신호 선택:</b></label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="signal" value="신체"> 신체적 신호</label>
+            <label><input type="checkbox" name="signal" value="감정"> 감정적 신호</label>
+            <label><input type="checkbox" name="signal" value="생각"> 생각의 신호</label>
+            <label><input type="checkbox" name="signal" value="행위"> 행위의 신호</label>
+            <label><input type="checkbox" name="signal" value="관계"> 관계의 신호</label>
+            <label><input type="checkbox" name="signal" value="내적가치"> 내적가치 신호</label>
+        </div>
+
+        <label for="eventDrained"><b>에너지를 소모시킨 일 (무슨 일이 있었나요?):</b></label>
+        <textarea id="eventDrained" rows="2" placeholder="예: 오늘 회의에서 실수를 해서 스트레스를 받았다."></textarea>
+
+        <label for="eventRecovered"><b>나에게 회복을 준 일 (소소하게 좋았던 일):</b></label>
+        <textarea id="eventRecovered" rows="2" placeholder="예: 따뜻한 차를 마시며 10분 동안 쉬었다."></textarea>
+
+        <!-- STEP 2 -->
+        <h3>2단계: 자동적 사고 & 인지 오류 찾기</h3>
+        <details>
+            <summary>💡 '자동적 사고'와 '인지 오류'란? (도움말 보기)</summary>
+            <p><b>자동적 사고:</b> 어떤 사건이 일어났을 때 무의식적으로 스쳐 지나가는 부정적인 생각입니다.</p>
+            <p><b>인지 오류:</b> 생각을 왜곡하게 만드는 마음의 습관입니다. 아래 중 내 생각과 비슷한 오류를 골라보세요.</p>
+            <ul>
+                <li><b>이분법적 사고:</b> 모 아니면 도 (완벽하지 않으면 실패다)</li>
+                <li><b>과일반화:</b> 한두 번의 일로 "항상 그래"라고 단정 짓기</li>
+                <li><b>독심술 오류:</b> "저 사람은 날 싫어해"라고 지레짐작하기</li>
+                <li><b>당위적 사고:</b> "~해야만 해"라는 강박으로 자책하기</li>
+                <li><b>완벽주의:</b> 작은 실수도 용납하지 못하는 마음</li>
+            </ul>
+        </details>
+
+        <label for="autoThought"><b>그 순간 떠오른 생각 (자동적 사고):</b></label>
+        <textarea id="autoThought" rows="2" placeholder="예: '나는 역시 능력이 부족해. 다들 날 한심하게 볼 거야.'"></textarea>
+
+        <label><b>해당하는 인지 오류 선택:</b></label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="distortion" value="이분법적 사고"> 이분법적 사고</label>
+            <label><input type="checkbox" name="distortion" value="과일반화"> 과일반화</label>
+            <label><input type="checkbox" name="distortion" value="독심술 오류"> 독심술 오류</label>
+            <label><input type="checkbox" name="distortion" value="당위적 사고"> 당위적 사고</label>
+            <label><input type="checkbox" name="distortion" value="완벽주의"> 완벽주의</label>
+            <label><input type="checkbox" name="distortion" value="정신적 여과"> 정신적 여과</label>
+        </div>
+
+        <!-- STEP 3 -->
+        <h3>3단계: 마음 재구조화 & 수용 질문</h3>
+        <details>
+            <summary>💡 상황을 다르게 바라보는 질문 (도움말 보기)</summary>
+            <p>내 생각이 합리적인지 되짚어보거나, 바꿀 수 없는 상황이라면 받아들이고 성장의 계기로 삼는 질문에 답해봅니다.</p>
+        </details>
+
+        <label for="reframeQuestion"><b>상황 수용 및 재평가 질문:</b></label>
+        <select id="reframeQuestion">
+            <option value="이 상황에서 나는 무엇을 배웠나?">이 상황에서 나는 무엇을 배웠나?</option>
+            <option value="이 경험을 통해 나는 성장했나?">이 경험을 통해 나는 성장했나?</option>
+            <option value="내가 컨트롤할 수 있는 부분은 무엇인가?">내가 컨트롤할 수 있는 부분은 무엇인가?</option>
+        </select>
+
+        <label for="reframeAnswer"><b>질문에 대한 나의 답변:</b></label>
+        <textarea id="reframeAnswer" rows="2" placeholder="예: 실수했지만 다음에는 미리 체크리스트를 만들면 된다. 한 번의 실수로 내 전체가 부정되는 것은 아니다."></textarea>
+
+        <button onclick="saveDiary()">일기 저장하기</button>
+
+        <hr style="margin-top: 25px; border: 0.5px solid #eee;">
+
+        <h3>📂 작성한 일기 목록</h3>
+        <div id="diaryList">
+            <p style="color: #888; font-size: 0.9rem;">아직 저장된 일기가 없습니다.</p>
+        </div>
+    </div>
+
     <script>
+        // 호흡 로직
         function startBreathing() {
             const circle = document.getElementById('circle');
             circle.innerText = '들숨 (4초)';
@@ -73,15 +228,52 @@
             }, 4000);
         }
 
+        // 문장 처방전
         const quotes = [
             "\"나를 죽이지 못하는 고통은 나를 더 강하게 만든다.\" - 니체",
             "\"아침이 오지 않는 밤은 없다.\" - 셰익스피어",
             "\"상처는 빛이 당신에게 들어오는 통로이다.\" - 루미"
         ];
-
         function getQuote() {
             const idx = Math.floor(Math.random() * quotes.length);
             document.getElementById('quote').innerText = quotes[idx];
+        }
+
+        // 일기 저장 기능
+        function saveDiary() {
+            const drained = document.getElementById('eventDrained').value;
+            const autoThought = document.getElementById('autoThought').value;
+            const answer = document.getElementById('reframeAnswer').value;
+
+            if (!drained && !autoThought) {
+                alert('내용을 입력해 주세요!');
+                return;
+            }
+
+            const diaryList = document.getElementById('diaryList');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'diary-entry';
+            
+            const date = new Date().toLocaleDateString('ko-KR');
+            newEntry.innerHTML = `
+                <strong>📅 ${date} 일기</strong><br>
+                • <b>에너지 소모:</b> ${drained || '없음'}<br>
+                • <b>자동적 사고:</b> ${autoThought || '없음'}<br>
+                • <b>재구조화:</b> ${answer || '없음'}
+            `;
+
+            if (diaryList.innerHTML.includes('아직 저장된 일기가 없습니다.')) {
+                diaryList.innerHTML = '';
+            }
+
+            diaryList.prepend(newEntry);
+
+            // 입력창 초기화
+            document.getElementById('eventDrained').value = '';
+            document.getElementById('eventRecovered').value = '';
+            document.getElementById('autoThought').value = '';
+            document.getElementById('reframeAnswer').value = '';
+            alert('일기가 성공적으로 저장되었습니다!');
         }
     </script>
 </body>
